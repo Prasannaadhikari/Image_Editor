@@ -45,6 +45,10 @@ body{
     margin-top: 5px;
 }
 
+#chosen-image{
+    display: none;
+}
+
 .result{
     position: relative;
     padding: 20px;
@@ -95,4 +99,21 @@ input[type="file"]{
 
 .result{
     position: relative;
+}
+li{
+    list-style-type: none;
+}
+
+.menu-container{
+    position: absolute;
+    bottom: 0;
+    background-color: rgb(235, 233, 233);
+}
+
+.menu-container>ul{
+    display: flex;
+}
+
+.menu-container>ul>li{
+    padding: 10px 20px;
 }

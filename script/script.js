@@ -9,7 +9,11 @@ let hor_flip = document.querySelector("#flip-x");
 let ver_flip = document.querySelector("#flip-y");
 
 let uploadBtn = document.querySelector("#upload-button");
-let image = document.querySelector("#chosen-image");
+const image = document.querySelector("#chosen-image");
+
+var canvas = document.getElementById('canvas-image');
+var ctx = canvas.getContext('2d');
+let flip=false;
 
 function resetFilter(){
     brighten.value = "100";
@@ -29,7 +33,9 @@ uploadBtn.onchange = () => {
     reader.readAsDataURL(uploadBtn.files[0]);
     reader.onload = () => {
         image.setAttribute("src", reader.result);
+        ctx.drawImage(image, 50,50, 600, 500);
     }
+    // image.onload = () =>;
 }
 
 let sliders = document.querySelectorAll(".filter input[type='range']");
@@ -38,9 +44,9 @@ sliders.forEach(slider => {
 });
 
 function addFilter(){
-    image.style.filter = `brightness(${brighten.value}%) blur(${blur_v.value}px) contrast(${contrast_v.value}%)
+    ctx.filter = `brightness(${brighten.value}%) blur(${blur_v.value}px) contrast(${contrast_v.value}%)
     hue-rotate(${hue_rotate_v.value}deg) saturate(${saturate.value}%)`;
-    console.log(image.style.filter); 
+    ctx.drawImage(image, 50,50, 600, 500);
 }
 
 let checkboxes = document.querySelectorAll(".flip-option input[type='radio']");
@@ -52,12 +58,27 @@ checkboxes.forEach(checkbox => {
 
 function flipImage(){
     if(hor_flip.checked){
-        image.style.transform = "scaleX(-1)";
+        ctx.save();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.scale(-1,1);
+        ctx.drawImage(image, 100,50, -650, 500);
+        ctx.restore();
     }
     else if(ver_flip.checked){
-        image.style.transform = "scaleY(-1)";
+        ctx.save();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.scale(1,-1);
+        ctx.drawImage(image, 50,50, 600, -500);
+        ctx.restore();
     }
     else{
-        image.style.transform = "scale(1,1)";
+        if(flip){
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        ctx.save();
+        ctx.scale(1,1);
+        ctx.drawImage(image, 50,50, 600, 500);
+        ctx.restore();
+        flip = true;
     }
 }

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./style/styles.css">
     <script src="./script/script.js" defer></script>
+    <script src="https://kit.fontawesome.com/828a3930be.js" crossorigin="anonymous"></script>
     <title>Image Editor</title>
 </head>
 <body>
@@ -36,6 +37,11 @@
                 <input type="range" min="0" max="200" value="100" id="saturate">
             </div>
 
+            <div class="filter">
+                <label for="cfilter">Color Filter</label>
+                <input type="range" min="0" max="200" value="100" id="cfilter">
+            </div>
+
             <div class="flip-buttons">
                 <div class="flip-option">
                 <input type="radio" name="flip" id="no-flip" checked>
@@ -58,10 +64,44 @@
         <div class="result">
             <figure class="image-container">
                 <img id="chosen-image">
+                <canvas id="canvas-image" width="600px" height="500px"></canvas>
             </figure>
             <input type="file" id="upload-button" accept="Image/*">
             <label for="upload-button">Choose An Image</label>
         </div>
+
+        <div class="menu-container">
+            <ul>
+                <li><i class="fas fa-undo"></i>
+                    <span class="tool-info">Undo</span>
+                </li>
+
+                <li><i class="fas fa-redo"></i>
+                    <span class="tool-info">Redo</span>
+                </li>
+
+                <li><i class="fas fa-trash"></i>
+                    <span class="tool-info">Delete</span>
+                </li>
+
+                <li><i class="fas fa-crop-alt"></i>
+                    <span class="tool-info">Crop</span>
+                </li>
+
+                <li><i class="fas fa-expand-arrows-alt"></i>
+                    <span class="tool-info">Resize</span>
+                </li>
+
+                <li><i class="fas fa-shapes"></i>
+                    <span class="tool-info">Shapes</span>                   
+                </li>
+
+                <li><i class="fas fa-font"></i>
+                    <span class="tool-info">Text</span>
+                </li>
+            </ul>
+        </div>
     </div>
+    
 </body>
 </html>
