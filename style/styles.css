@@ -116,4 +116,9 @@ li{
 
 .menu-container>ul>li{
     padding: 10px 20px;
+    cursor: pointer;
+}
+
+.menu-container>ul>li:hover{
+    background-color: aliceblue;
 }

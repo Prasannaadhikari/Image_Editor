@@ -15,6 +15,11 @@ var canvas = document.getElementById('canvas-image');
 var ctx = canvas.getContext('2d');
 let flip=false;
 
+var restore_arr = [];
+var removed_ele = [];
+let index=-1;
+let index2 = 0;
+
 function resetFilter(){
     brighten.value = "100";
     blur_v.value = "0";
@@ -34,6 +39,9 @@ uploadBtn.onchange = () => {
     reader.onload = () => {
         image.setAttribute("src", reader.result);
         ctx.drawImage(image, 50,50, 600, 500);
+        restore_arr.push(ctx.getImageData(0,0, canvas.width, canvas.height));
+        index+=1;
+        console.log(restore_arr);
     }
     // image.onload = () =>;
 }
@@ -47,6 +55,8 @@ function addFilter(){
     ctx.filter = `brightness(${brighten.value}%) blur(${blur_v.value}px) contrast(${contrast_v.value}%)
     hue-rotate(${hue_rotate_v.value}deg) saturate(${saturate.value}%)`;
     ctx.drawImage(image, 50,50, 600, 500);
+    restore_arr.push(ctx.getImageData(0,0, canvas.width, canvas.height));
+    index+=1;
 }
 
 let checkboxes = document.querySelectorAll(".flip-option input[type='radio']");
@@ -81,4 +91,33 @@ function flipImage(){
         ctx.restore();
         flip = true;
     }
+}
+
+function undo(){
+    if (index<=0){
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    else{
+        index -=1;
+        console.log(restore_arr[index]);
+        removed_ele.push(restore_arr.pop());
+        index2+=1;
+        ctx.putImageData(restore_arr[index], 0, 0);
+    }
+}
+
+function redo(){
+    if (index2<=0){
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    else{
+        console.log(removed_ele[index2-1]);
+        ctx.putImageData(removed_ele[index2-1], 0, 0);
+        removed_ele.pop();
+        index2-=1;
+    }
+}
+
+function delete_canvas(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
