@@ -13,12 +13,12 @@ const image = document.querySelector("#chosen-image");
 
 var canvas = document.getElementById('canvas-image');
 var ctx = canvas.getContext('2d');
-let flip=false;
 
-var restore_arr = [];
-var removed_ele = [];
-let index=-1;
-let index2 = 0;
+let sliders = document.querySelectorAll(".filter input[type='range']");
+sliders.forEach(slider => {
+    slider.addEventListener("input", addFilter);
+});
+
 
 function resetFilter(){
     brighten.value = "100";
@@ -46,17 +46,21 @@ uploadBtn.onchange = () => {
     // image.onload = () =>;
 }
 
-let sliders = document.querySelectorAll(".filter input[type='range']");
-sliders.forEach(slider => {
-    slider.addEventListener("input", addFilter);
-});
-
 function addFilter(){
     ctx.filter = `brightness(${brighten.value}%) blur(${blur_v.value}px) contrast(${contrast_v.value}%)
     hue-rotate(${hue_rotate_v.value}deg) saturate(${saturate.value}%)`;
-    ctx.drawImage(image, 50,50, 600, 500);
+    
+    ctx.drawImage(image, 50, 50, canvas.width, canvas.height);
     restore_arr.push(ctx.getImageData(0,0, canvas.width, canvas.height));
     index+=1;
+}
+
+function redraw(image_w = 600, image_h= 500){
+    if(image_w!=600 || image_h!= 500){
+        canvas.width = parseInt(image_w) ;
+        canvas.height = parseInt(image_h);
+    }
+    ctx.drawImage(image, 50,50, image_w, image_h);
 }
 
 let checkboxes = document.querySelectorAll(".flip-option input[type='radio']");
@@ -99,7 +103,6 @@ function undo(){
     }
     else{
         index -=1;
-        console.log(restore_arr[index]);
         removed_ele.push(restore_arr.pop());
         index2+=1;
         ctx.putImageData(restore_arr[index], 0, 0);
@@ -111,7 +114,6 @@ function redo(){
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
     else{
-        console.log(removed_ele[index2-1]);
         ctx.putImageData(removed_ele[index2-1], 0, 0);
         removed_ele.pop();
         index2-=1;
@@ -120,4 +122,42 @@ function redo(){
 
 function delete_canvas(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function resize(){
+    var i_width = image.naturalWidth;
+    var i_height = image.naturalHeight;
+    var aspectratio = i_width / i_height;
+    var u_width = prompt("Enter the required image width: ");
+    var flag_aspectratio = prompt("Do you want to maintain th aspect ratio (1/0): ");
+    console.log(flag_aspectratio);
+    if(flag_aspectratio == 0){
+        var u_height = prompt("Enter the required image height: ");
+    }
+    else{
+        var u_height = Math.floor(u_width/aspectratio);
+    }
+    console.log(u_width, u_height, aspectratio);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    redraw(u_width, u_height);
+}
+
+function crop_image(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(image, start_x-canvas_x_pos+threshold, start_y-canvas_y_pos, Math.abs(end_x-start_x)+threshold, Math.abs(end_y-start_y), start_x-canvas_x_pos, start_y-canvas_y_pos, Math.abs(end_x-start_x),  Math.abs(end_y-start_y));
+}
+
+function crop(){
+    canvas.addEventListener("mousedown", (e)=>{
+        start_x = e.clientX;
+        start_y = e.clientY;
+        mouse_down = true;
+    });
+    
+    canvas.addEventListener("mouseup", (e)=>{
+        end_x = e.clientX;
+        end_y = e.clientY;
+        mouse_up = true;
+        crop_image(start_x, start_y, end_x, end_y);
+    });
 }

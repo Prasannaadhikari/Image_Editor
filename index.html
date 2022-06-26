@@ -5,8 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./style/styles.css">
-    <script src="./script/script.js" defer></script>
     <script src="https://kit.fontawesome.com/828a3930be.js" crossorigin="anonymous"></script>
+    <script src="./script/constants.js" defer></script>
+    <script src="./script/script.js" defer></script>
     <title>Image Editor</title>
 </head>
 <body>
@@ -84,11 +85,11 @@
                     <span class="tool-info">Delete</span>
                 </li>
 
-                <li class="crop"><i class="fas fa-crop-alt"></i>
+                <li class="crop" onclick="crop()"><i class="fas fa-crop-alt"></i>
                     <span class="tool-info">Crop</span>
                 </li>
 
-                <li class="resize"><i class="fas fa-expand-arrows-alt"></i>
+                <li class="resize" onclick="resize()"><i class="fas fa-expand-arrows-alt"></i>
                     <span class="tool-info">Resize</span>
                 </li>
 
