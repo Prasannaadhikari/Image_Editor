@@ -65,7 +65,7 @@
         <div class="result">
             <figure class="image-container">
                 <img id="chosen-image">
-                <canvas id="canvas-image" width="600px" height="500px"></canvas>
+                <canvas id="canvas-image" width="900px" height="600px"></canvas>
             </figure>
             <input type="file" id="upload-button" accept="Image/*">
             <label for="upload-button">Choose An Image</label>
@@ -93,8 +93,35 @@
                     <span class="tool-info">Resize</span>
                 </li>
 
-                <li class="shapes"><i class="fas fa-shapes"></i>
-                    <span class="tool-info">Shapes</span>                   
+                <li class="shapes" onchange="shapes()"><i class="fas fa-shapes"></i>
+                    <span class="tool-info">Shapes</span>   
+                    <select name="shape" id="shape_define">
+                        <option>Select One</option>
+                        <option value="rectangle">Rectangle</option>
+                        <option value="circle">Circle</option>
+                        <option value="square">Square</option>
+                        <option value="ellipse">Ellipse</option>
+                      </select>
+                </li>
+
+                <li class="frame" onchange="frame()"><i class="fas fa-clone"></i>
+                    <span class="tool-info">Frame</span>  
+                    <div class="hidden">
+                        <img id="f1" src="./assets/frames/border-img-1.png">
+                        <img id="f2" src="./assets/frames/border-img-2.png">
+                        <img id="f3" src="./assets/frames/border-img-3.png">
+                        <img id="f4" src="./assets/frames/border-img-4.png">
+                        <img id="f5" src="./assets/frames/border-img-5.png">
+                        <img id="f6" src="./assets/frames/landscape-frame.png">
+                    </div>
+
+                    <select name="frame" id="frame_define">
+                        <option>Select One</option>
+                        <option value="f1">Frame 1</option>
+                        <option value="f2">Frame 2</option>
+                        <option value="f3">Frame 3</option>
+                        <option value="f4">Frame 4</option>
+                      </select>                
                 </li>
 
                 <li class="text"><i class="fas fa-font"></i>

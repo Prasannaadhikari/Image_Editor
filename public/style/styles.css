@@ -24,7 +24,22 @@ body{
     grid-template-columns: 5fr 7fr;
 }
 
+#canvas-image{
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    user-select: none;
+    max-width: 622px;
+    max-height: 350px;
+    cursor: default;
+}
+
+.hidden{
+    display: none;
+}
+
 .editor{
+    width: 20vmin;
     min-height: 35vmin;
     display: flex;
     flex-direction: column;
@@ -40,7 +55,7 @@ body{
 
 .editor input[type="range"]{
     display: block;
-    width: 100%;
+    /* width: 100%; */
     position: relative;
     margin-top: 5px;
 }
@@ -121,4 +136,8 @@ li{
 
 .menu-container>ul>li:hover{
     background-color: aliceblue;
+}
+
+.mask_option{
+    display: none;
 }
