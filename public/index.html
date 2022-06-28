@@ -95,12 +95,39 @@
 
                 <li class="shapes" onchange="shapes()"><i class="fas fa-shapes"></i>
                     <span class="tool-info">Shapes</span>   
+                    <div class="hidden">
+                        <img id="s1" src="./assets/shapes/01-fireworks.svg">
+                        <img id="s2" src="./assets/shapes/02-bell.svg">
+                        <img id="s3" src="./assets/shapes/03-times-square ball.svg">
+                        <img id="s4" src="./assets/shapes/04-invitation.svg">
+                        <img id="s5" src="./assets/shapes/05-garland.svg">
+                        <img id="s6" src="./assets/shapes/07-calendar.svg">
+                        <img id="s7" src="./assets/shapes/08-noisemaker.svg">
+                        <img id="s8" src="./assets/shapes/09-confetti.svg">
+                        <img id="s9" src="./assets/shapes/11-hat.svg">
+                        <img id="s10" src="./assets/shapes/12-glasses.svg">
+                        <img id="s11" src="./assets/shapes/13-grapes.svg">
+                        <img id="s12" src="./assets/shapes/14-clock.svg">
+                        <img id="s13" src="./assets/shapes/16-microphone.svg">
+                        <img id="s14" src="./assets/shapes/17-snowflake.svg">
+                    </div>
+
                     <select name="shape" id="shape_define">
                         <option>Select One</option>
-                        <option value="rectangle">Rectangle</option>
-                        <option value="circle">Circle</option>
-                        <option value="square">Square</option>
-                        <option value="ellipse">Ellipse</option>
+                        <option value="s1">Fireworks</option>
+                        <option value="s2">Bell</option>
+                        <option value="s3">Ball</option>
+                        <option value="s4">Invitation</option>
+                        <option value="s5">Garland</option>
+                        <option value="s6">Calendar</option>
+                        <option value="s7">Noise Maker</option>
+                        <option value="s8">Confetti</option>
+                        <option value="s9">Hat</option>
+                        <option value="s10">Glass</option>
+                        <option value="s11">Grapes</option>
+                        <option value="s12">Clock</option>
+                        <option value="s13">Microphone</option>
+                        <option value="s14">Snowflake</option>
                       </select>
                 </li>
 
@@ -124,7 +151,29 @@
                       </select>                
                 </li>
 
-                <li class="text"><i class="fas fa-font"></i>
+                <li class="emoji" onchange="emoji()"><i class="fas fa-smile"></i>
+                    <span class="tool-info">Emoji</span>  
+                    <div class="hidden">
+                        <img id="e1" src="./assets/Emoji/Grin with large eye.png">
+                        <img id="e2" src="./assets/Emoji/grin with sweat.png">
+                        <img id="e3" src="./assets/Emoji/Cool.png">
+                        <img id="e4" src="./assets/Emoji/Cowboy.png">
+                        <img id="e5" src="./assets/Emoji/lovely.png">
+                        <img id="e6" src="./assets/Emoji/Sleepy.png">
+                    </div>
+
+                    <select name="emoji" id="emoji_define">
+                        <option>Select One</option>
+                        <option value="e1">Grin</option>
+                        <option value="e2">Grin with sweat</option>
+                        <option value="e3">Cool</option>
+                        <option value="e4">Cowboy</option>
+                        <option value="e5">Lovely</option>
+                        <option value="e6">Sleepy</option>
+                      </select>                
+                </li>
+
+                <li class="text" onclick="text()"><i class="fas fa-font"></i>
                     <span class="tool-info">Text</span>
                 </li>
             </ul>

@@ -12,8 +12,12 @@ var start_x, start_y, end_x, end_y;
 var mouse_down = false;
 var mouse_up = false;
 var frame_dis = false;
-const threshold = 130;
+const threshold = 150;
 var u_height;
+let max_width_canvas = 622;
+let max_height_canvas = 350;
+
+let dragable = false;
 
 let default_brightness = "100";
 let default_blur = "0";
