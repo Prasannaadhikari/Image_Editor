@@ -14,40 +14,52 @@ const image = document.querySelector("#chosen-image");
 var canvas = document.getElementById('canvas-image');
 var ctx = canvas.getContext('2d');
 
-let sliders = document.querySelectorAll(".filter input[type='range']");
-sliders.forEach(slider => {
-    slider.addEventListener("input", addFilter);
-});
+class Canvas_Image{
+    constructor(image){
+        this.width = image.width;
+        this.height = image.height;
+    }
 
+    resetFilter(){
+        brighten.value = default_brightness;
+        blur_v.value = default_blur;
+        contrast_v.value = default_contrast;
+        hue_rotate_v.value = default_hue;
+        saturate.value = default_saturate;
+        no_flip.checked = true;
+        addFilter();
+        flipImage();
+    }
 
-function resetFilter(){
-    brighten.value = default_brightness;
-    blur_v.value = default_blur;
-    contrast_v.value = default_contrast;
-    hue_rotate_v.value = default_hue;
-    saturate.value = default_saturate;
-    no_flip.checked = true;
-    addFilter();
-    flipImage();
-}
-
-uploadBtn.onchange = () => {
-    resetFilter();
-    document.querySelector(".image-container").style.display = "block";
-    let reader = new FileReader();
-    reader.crossOrigin = "Anonymous";
-    reader.readAsDataURL(uploadBtn.files[0]);
-    reader.onload = () => {
-        image.setAttribute("src", reader.result);
+    new_image_load(){
         console.log(image.width, image.height);
         canvas.width = image.width;
         canvas.height = image.height;
         ctx.drawImage(image, 0,0, image.width, image.height);
         restore_arr.push(ctx.getImageData(0,0, canvas.width, canvas.height));
         index+=1;
-        console.log(restore_arr);
     }
 }
+
+uploadBtn.onchange = () => {
+    document.querySelector(".image-container").style.display = "block";
+    let reader = new FileReader();
+    reader.crossOrigin = "Anonymous";
+    reader.readAsDataURL(uploadBtn.files[0]);
+    reader.onload = () => {
+        image.setAttribute("src", reader.result);
+        image.onload =()=>{
+            const c1 = new Canvas_Image(image);
+            c1.resetFilter();
+            c1.new_image_load();
+        }
+    }
+}
+
+let sliders = document.querySelectorAll(".filter input[type='range']");
+sliders.forEach(slider => {
+    slider.addEventListener("input", addFilter);
+});
 
 
 function addFilter(){
@@ -117,6 +129,7 @@ function redo(){
 
 function delete_canvas(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    document.querySelector(".image-container").style.display = "none";
 }
 
 function redraw(image_w, image_h){
@@ -266,8 +279,8 @@ function clear_frame(frame_dis){
 function draw_frame(f){
     ctx.globalCompositeOperation = "source-over";
     ctx.drawImage(f, 0,0, canvas.width, canvas.height);
-    restore_arr.push(ctx.getImageData(0,0, canvas.width, canvas.height));
-    index+=1;
+    // restore_arr.push(ctx.getImageData(0,0, canvas.width, canvas.height));
+    // index+=1;
     frame_dis = true;
 }
 
@@ -311,14 +324,12 @@ function frame(){
 }
 
 function text(){
-    //tempCtx.fillText("Hello from Prasanna",(canvas.width/2), canvas.height/2);
     ctx.globalCompositeOperation = "source-over";
     ctx.font = `${canvas.width * 0.05}px Calibri`;
     ctx.globalAlpha = 0.01;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.globalAlpha = 1.0;
     var text = prompt("Enter the text you want to write: ");
-    // ctx.fillText("Hello from Prasanna",200,200);
     canvas.addEventListener("mousedown", (e)=>{
         let x_value = e.clientX - canvas_x_pos;
         let y_value = e.clientY - canvas_y_pos;
