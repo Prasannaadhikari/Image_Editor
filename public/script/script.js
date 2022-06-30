@@ -14,10 +14,74 @@ const image = document.querySelector("#chosen-image");
 var canvas = document.getElementById('canvas-image');
 var ctx = canvas.getContext('2d');
 
+let sliders = document.querySelectorAll(".filter input[type='range']");
+
+
+let checkboxes = document.querySelectorAll(".flip-option input[type='radio']");
+let undo = document.querySelector(".undo");
+let redo = document.querySelector(".redo");
+let cdelete = document.querySelector(".delete");
+let resize = document.querySelector(".resize");
+let crop = document.querySelector(".crop");
+let text = document.querySelector(".text");
+let save_canvas = document.querySelector(".save");
+
 class Canvas_Image{
     constructor(image){
         this.width = image.width;
         this.height = image.height;
+        this.brightness = default_brightness;
+        this.blur = default_blur;
+        this.hue = default_hue;
+        this.saturate = default_saturate;
+        this.flip = false;
+        this.index = index;
+        this.index2 = index2;
+        this.canvas = canvas;
+        this.ctx = ctx;
+        this.image = image;
+        this.restore_arr = restore_arr;
+        this.removed_ele = removed_ele;
+
+        sliders.forEach(slider => {
+            slider.addEventListener("input", () => {
+                this.addFilter();
+            });
+        });
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener("click", ()=>{
+                this.flipImage();
+            });
+       });
+
+       undo.addEventListener("click", ()=>{
+            this.undo();
+       });
+
+       redo.addEventListener("click", ()=>{
+        this.redo();
+       });
+
+       resize.addEventListener("click", ()=>{
+        this.resize();
+       });
+
+       cdelete.addEventListener("click", ()=>{
+        this.delete_canvas();
+       });
+
+       crop.addEventListener("click", ()=>{
+        this.crop();
+       });
+
+       text.addEventListener("click", ()=>{
+        this.text();
+       });
+
+       save_canvas.addEventListener("click", ()=>{
+        this.save();
+       });
     }
 
     resetFilter(){
@@ -27,17 +91,165 @@ class Canvas_Image{
         hue_rotate_v.value = default_hue;
         saturate.value = default_saturate;
         no_flip.checked = true;
-        addFilter();
-        flipImage();
+        this.addFilter();
+        this.flipImage();
     }
 
     new_image_load(){
-        console.log(image.width, image.height);
-        canvas.width = image.width;
-        canvas.height = image.height;
-        ctx.drawImage(image, 0,0, image.width, image.height);
-        restore_arr.push(ctx.getImageData(0,0, canvas.width, canvas.height));
-        index+=1;
+        this.canvas.width = this.image.width;
+        this.canvas.height = this.image.height;
+        this.ctx.drawImage(this.image, 0,0, this.image.width, this.image.height);
+        this.restore_arr.push(this.ctx.getImageData(0,0, this.canvas.width, this.canvas.height));
+        this.index+=1;
+    }
+
+    addFilter(){
+        this.ctx.filter = `brightness(${brighten.value}%) blur(${blur_v.value}px) contrast(${contrast_v.value}%)
+        hue-rotate(${hue_rotate_v.value}deg) saturate(${saturate.value}%)`;
+        this.ctx.drawImage(this.image, 0, 0, this.canvas.width, this.canvas.height);
+        this.restore_arr.push(this.ctx.getImageData(0,0, this.canvas.width, this.canvas.height));
+        this.index+=1;
+    }
+
+    flipImage(){
+        if(hor_flip.checked){
+            this.ctx.save();
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.scale(-1,1);
+            this.ctx.drawImage(this.image, 0,0, -this.canvas.width, this.canvas.height);
+            this.ctx.restore();
+        }
+        else if(ver_flip.checked){
+            this.ctx.save();
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.scale(1,-1);
+            this.ctx.drawImage(this.image, 0,0, this.canvas.width, -this.canvas.height);
+            this.ctx.restore();
+        }
+        else{
+            if(this.flip){
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+            this.ctx.save();
+            this.ctx.scale(1,1);
+            this.ctx.drawImage(this.image, 0,0, this.canvas.width, this.canvas.height);
+            this.ctx.restore();
+            this.flip = true;
+        }
+    }
+
+    undo(){
+        if (this.index<=0){
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+        else{
+            this.index -=1;
+            this.removed_ele.push(this.restore_arr.pop());
+            this.index2+=1;
+            this.ctx.putImageData(this.restore_arr[this.index], 0, 0);
+        }
+    }
+
+    redo(){
+        if (this.index2<=0){
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+        else{
+            this.ctx.putImageData(this.removed_ele[this.index2-1], 0, 0);
+            this.removed_ele.pop();
+            this.index2-=1;
+        }
+    }
+
+    delete_canvas(){
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        document.querySelector(".image-container").style.display = "none";
+    }
+
+    redraw(image_w, image_h){
+        this.canvas.width = image_w;
+        this.canvas.height = image_h;
+        this.ctx.drawImage(this.image, 0,0, image_w, image_h);
+        this.restore_arr.push(this.ctx.getImageData(0,0, this.canvas.width, this.canvas.height));
+        this.index+=1;
+    }
+
+    resize(){
+        var i_width = this.image.naturalWidth;
+        var i_height = this.image.naturalHeight;
+        var aspectratio = i_width / i_height;
+        var u_width = prompt("Enter the required image width: ");
+        var flag_aspectratio = prompt("Do you want to maintain th aspect ratio (1/0): ");
+        console.log(flag_aspectratio);
+        if(flag_aspectratio == 0){
+            u_height = prompt("Enter the required image height: ");
+        }
+        else{
+            u_height = Math.floor(u_width/aspectratio);
+        }
+        console.log(u_width, u_height, aspectratio);
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.redraw(parseInt(u_width), parseInt(u_height));
+    }
+
+
+    crop_image(start_x, start_y, end_x, end_y){
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        let r_startx = (Math.abs(start_x-canvas_x_pos)/max_width_canvas)*this.image.width;
+        let r_starty = (Math.abs(start_y-canvas_y_pos)/max_height_canvas)*this.image.height;
+        let r_image_width = (Math.abs(end_x-start_x)/max_width_canvas)*this.image.width;
+        let r_image_height = (Math.abs(end_y-start_y)/max_height_canvas)*this.image.height;
+        console.log(r_startx, r_starty, r_image_width, r_image_height,r_startx, r_starty, r_image_width, r_image_height);
+        this.ctx.drawImage(this.image, r_startx, r_starty, r_image_width, r_image_height,r_startx, r_starty, r_image_width, r_image_height);
+        this.restore_arr.push(this.ctx.getImageData(0,0, this.canvas.width, this.canvas.height));
+        this.index+=1;
+    }
+
+    crop(){
+        this.canvas.addEventListener("mousedown", (e)=>{
+            start_x = e.clientX;
+            start_y = e.clientY;
+            mouse_down = true;
+            console.log("Mouse Down", e.clientX, e.clientY);
+        });
+        
+        this.canvas.addEventListener("mouseup", (e)=>{
+            end_x = e.clientX;
+            end_y = e.clientY;
+            mouse_up = true;
+            this.crop_image(start_x, start_y, end_x, end_y);
+            console.log("Mouse Up", e.clientX, e.clientY);
+        });
+    }
+
+    text(){
+        this.ctx.globalCompositeOperation = "source-over";
+        this.ctx.font = `${this.canvas.width * 0.05}px Calibri`;
+        this.ctx.globalAlpha = 0.01;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.globalAlpha = 1.0;
+        var text = prompt("Enter the text you want to write: ");
+        this.canvas.addEventListener("mousedown", (e)=>{
+            let x_value = e.clientX - canvas_x_pos;
+            let y_value = e.clientY - canvas_y_pos;
+            this.ctx.fillText(text,(x_value/max_width_canvas)*this.canvas.width, (y_value/max_height_canvas)*this.canvas.height);
+            this.restore_arr.push(this.ctx.getImageData(0,0, this.canvas.width, this.canvas.height));
+            this.index+=1;
+        });
+    }
+
+    save(){
+        let linkElement = document.getElementById('link');
+        linkElement.setAttribute('download', 'edited_image.jpg');
+        let canvasData = this.canvas.toDataURL("image/png");
+        // Replace it with a stream so that it starts downloading
+        canvasData.replace("image/png", "image/octet-stream");
+      
+        // Set the location href to the canvas data
+        linkElement.setAttribute('href', canvasData);
+      
+        // Click on the link to start the download 
+        linkElement.click();
     }
 }
 
@@ -54,287 +266,4 @@ uploadBtn.onchange = () => {
             c1.new_image_load();
         }
     }
-}
-
-let sliders = document.querySelectorAll(".filter input[type='range']");
-sliders.forEach(slider => {
-    slider.addEventListener("input", addFilter);
-});
-
-
-function addFilter(){
-    ctx.filter = `brightness(${brighten.value}%) blur(${blur_v.value}px) contrast(${contrast_v.value}%)
-    hue-rotate(${hue_rotate_v.value}deg) saturate(${saturate.value}%)`;
-    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-    restore_arr.push(ctx.getImageData(0,0, canvas.width, canvas.height));
-    index+=1;
-}
-
-let checkboxes = document.querySelectorAll(".flip-option input[type='radio']");
-
-checkboxes.forEach(checkbox => {
-     checkbox.addEventListener("click", flipImage);
-});
-
-
-function flipImage(){
-    if(hor_flip.checked){
-        ctx.save();
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.scale(-1,1);
-        ctx.drawImage(image, 0,0, -canvas.width, canvas.height);
-        ctx.restore();
-    }
-    else if(ver_flip.checked){
-        ctx.save();
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.scale(1,-1);
-        ctx.drawImage(image, 0,0, canvas.width, -canvas.height);
-        ctx.restore();
-    }
-    else{
-        if(flip){
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-        ctx.save();
-        ctx.scale(1,1);
-        ctx.drawImage(image, 0,0, canvas.width, canvas.height);
-        ctx.restore();
-        flip = true;
-    }
-}
-
-function undo(){
-    if (index<=0){
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-    else{
-        index -=1;
-        removed_ele.push(restore_arr.pop());
-        index2+=1;
-        ctx.putImageData(restore_arr[index], 0, 0);
-    }
-}
-
-function redo(){
-    if (index2<=0){
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-    else{
-        ctx.putImageData(removed_ele[index2-1], 0, 0);
-        removed_ele.pop();
-        index2-=1;
-    }
-}
-
-function delete_canvas(){
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    document.querySelector(".image-container").style.display = "none";
-}
-
-function redraw(image_w, image_h){
-    canvas.width = image_w;
-    canvas.height = image_h;
-    console.log(canvas.width, canvas.height, image_w, image_h);
-    ctx.drawImage(image, 0,0, image_w, image_h);
-    restore_arr.push(ctx.getImageData(0,0, canvas.width, canvas.height));
-    index+=1;
-}
-
-function resize(){
-    var i_width = image.naturalWidth;
-    var i_height = image.naturalHeight;
-    var aspectratio = i_width / i_height;
-    var u_width = prompt("Enter the required image width: ");
-    var flag_aspectratio = prompt("Do you want to maintain th aspect ratio (1/0): ");
-    console.log(flag_aspectratio);
-    if(flag_aspectratio == 0){
-        u_height = prompt("Enter the required image height: ");
-    }
-    else{
-        u_height = Math.floor(u_width/aspectratio);
-    }
-    console.log(u_width, u_height, aspectratio);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    redraw(parseInt(u_width), parseInt(u_height));
-}
-
-function crop_image(){
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    let r_startx = (Math.abs(start_x-canvas_x_pos)/max_width_canvas)*image.width;
-    let r_starty = (Math.abs(start_y-canvas_y_pos)/max_height_canvas)*image.height;
-    let r_image_width = (Math.abs(end_x-start_x)/max_width_canvas)*image.width;
-    let r_image_height = (Math.abs(end_y-start_y)/max_height_canvas)*image.height;
-    console.log(r_startx, r_starty, r_image_width, r_image_height,r_startx, r_starty, r_image_width, r_image_height);
-    ctx.drawImage(image, r_startx, r_starty, r_image_width, r_image_height,r_startx, r_starty, r_image_width, r_image_height);
-    restore_arr.push(ctx.getImageData(0,0, canvas.width, canvas.height));
-    index+=1;
-}
-
-function crop(){
-    canvas.addEventListener("mousedown", (e)=>{
-        start_x = e.clientX;
-        start_y = e.clientY;
-        mouse_down = true;
-        console.log("Mouse Down", e.clientX, e.clientY);
-    });
-    
-    canvas.addEventListener("mouseup", (e)=>{
-        end_x = e.clientX;
-        end_y = e.clientY;
-        mouse_up = true;
-        crop_image(start_x, start_y, end_x, end_y);
-        console.log("Mouse Up", e.clientX, e.clientY);
-    });
-}
-
-function random_number_generator(limit){
-    let value = Math.random()*limit + 10;
-    console.log(value);
-    return value;
-}
-
-
-function draw_shapes(item){
-    ctx.globalCompositeOperation = "source-over";
-    let x_pos = random_number_generator(620);
-    let y_pos = random_number_generator(300);
-    console.log(x_pos, y_pos);
-    ctx.drawImage(item, x_pos,y_pos, 150, 150);
-    restore_arr.push(ctx.getImageData(0,0, canvas.width, canvas.height));
-    index+=1;
-}
-
-function shapes(){
-    let shape_item = document.querySelector("#shape_define").value;
-    console.log(shape_item);
-    if(shape_item == 's1'){
-        let s1 = document.querySelector("#s1");
-        draw_shapes(s1);
-    }
-
-    else if(shape_item == 's2'){
-        let s2 = document.querySelector("#s2");
-        draw_shapes(s2);
-    }
-
-    else if(shape_item == 's3'){
-        let s3 = document.querySelector("#s3");
-        draw_shapes(s3);
-    }
-
-    else if(shape_item == 's4'){
-        let s4 = document.querySelector("#s4");
-        draw_shapes(s4);
-    }
-
-    else if(shape_item == 's5'){
-        let s5 = document.querySelector("#s5");
-        draw_shapes(s5);
-    }  
-}
-
-function emoji(){
-    let emoji_item = document.querySelector("#emoji_define").value;
-    console.log(emoji_item);
-    if(emoji_item == 'e1'){
-        let e1 = document.querySelector("#e1");
-        draw_shapes(e1);
-    }
-
-    else if(emoji_item == 'e2'){
-        let e2 = document.querySelector("#e2");
-        draw_shapes(e2);
-    }
-
-    else if(emoji_item == 'e3'){
-        let e3 = document.querySelector("#e3");
-        draw_shapes(e3);
-    }
-
-    else if(emoji_item == 'e4'){
-        let e4 = document.querySelector("#e4");
-        draw_shapes(e4);
-    }
-
-    else if(emoji_item == 'e5'){
-        let e5 = document.querySelector("#e5");
-        draw_shapes(e5);
-    }  
-
-    else if(emoji_item == 'e6'){
-        let e6 = document.querySelector("#e6");
-        draw_shapes(e6);
-    }
-}
-
-function clear_frame(frame_dis){
-    if(frame_dis){
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(image, 0,0, image.width, image.height);
-        frame_dis = false;
-    }
-}
-
-function draw_frame(f){
-    ctx.globalCompositeOperation = "source-over";
-    ctx.drawImage(f, 0,0, canvas.width, canvas.height);
-    // restore_arr.push(ctx.getImageData(0,0, canvas.width, canvas.height));
-    // index+=1;
-    frame_dis = true;
-}
-
-function frame(){
-    let frame_item = document.querySelector("#frame_define").value;
-    if(frame_item == 'f1'){
-        clear_frame(frame_dis);
-        let f1 = document.querySelector("#f1");
-        draw_frame(f1);
-    }
-
-    else if(frame_item == 'f2'){
-        clear_frame(frame_dis);
-        let f2 = document.querySelector("#f2");
-        draw_frame(f2);
-    }
-
-    else if(frame_item == 'f3'){
-        clear_frame(frame_dis);
-        let f3 = document.querySelector("#f3");
-        draw_frame(f3);
-    }
-
-    else if(frame_item == 'f4'){
-        clear_frame(frame_dis);
-        let f4 = document.querySelector("#f4");
-        draw_frame(f4);
-    }
-
-    else if(frame_item == 'f5'){
-        clear_frame(frame_dis);
-        let f5 = document.querySelector("#f5");
-        draw_frame(f5);
-    }
-
-    else if(frame_item == 'f6'){
-        clear_frame(frame_dis);
-        let f6 = document.querySelector("#f6");
-        draw_frame(f6);
-    }
-}
-
-function text(){
-    ctx.globalCompositeOperation = "source-over";
-    ctx.font = `${canvas.width * 0.05}px Calibri`;
-    ctx.globalAlpha = 0.01;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.globalAlpha = 1.0;
-    var text = prompt("Enter the text you want to write: ");
-    canvas.addEventListener("mousedown", (e)=>{
-        let x_value = e.clientX - canvas_x_pos;
-        let y_value = e.clientY - canvas_y_pos;
-        ctx.fillText(text,(x_value/max_width_canvas)*canvas.width, (y_value/max_height_canvas)*canvas.height);
-        restore_arr.push(ctx.getImageData(0,0, canvas.width, canvas.height));
-        index+=1;
-    });
 }

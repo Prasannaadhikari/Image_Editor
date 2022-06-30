@@ -19,6 +19,8 @@ let max_height_canvas = 350;
 
 let dragable = false;
 
+let sample_size = 40;
+
 let default_brightness = "100";
 let default_blur = "0";
 let default_contrast = "100";
