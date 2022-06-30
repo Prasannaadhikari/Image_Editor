@@ -25,6 +25,7 @@ let resize = document.querySelector(".resize");
 let crop = document.querySelector(".crop");
 let text = document.querySelector(".text");
 let save_canvas = document.querySelector(".save");
+let save_canvas_todb = document.querySelector(".save_todb");
 
 class Canvas_Image{
     constructor(image){
@@ -81,6 +82,10 @@ class Canvas_Image{
 
        save_canvas.addEventListener("click", ()=>{
         this.save();
+       });
+
+       save_canvas_todb.addEventListener("click", ()=>{
+        this.save_todb();
        });
     }
 
@@ -250,6 +255,14 @@ class Canvas_Image{
       
         // Click on the link to start the download 
         linkElement.click();
+    }
+
+    save_todb(){
+        let linkElement = document.getElementById('link');
+        linkElement.setAttribute('download', 'edited_image.jpg');
+        let canvasData = this.canvas.toDataURL("image/png");
+        
+      
     }
 }
 

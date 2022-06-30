@@ -1,11 +1,9 @@
 const express = require("express");
-const { async } = require('@firebase/util');
 const app = express();
-const PORT = 3000;
+const PORT = 8000;
 
 app.use(express.static("public"));
-app.use(express.json());
 
 app.listen(PORT, () => {
-  console.log("Listening on port 3000");
-});
+  console.log("Listening on port 8000");
+}); 
