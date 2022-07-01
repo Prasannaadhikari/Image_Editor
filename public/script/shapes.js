@@ -1,9 +1,14 @@
+//genereate random number to the limit
 function random_number_generator(limit){
     let value = Math.random()*limit + 10;
     console.log(value);
     return value;
 }
 
+/**
+ * 
+ * @param {image} item shapescreated
+ */
 function draw_shapes(item){
     ctx.globalCompositeOperation = "source-over";
     let x_pos = random_number_generator(parseInt(canvas.width));
@@ -43,7 +48,7 @@ function shapes(){
     }  
 }
 
-
+//create and add emoji to the image
 function emoji(){
     let emoji_item = document.querySelector("#emoji_define").value;
     console.log(emoji_item);

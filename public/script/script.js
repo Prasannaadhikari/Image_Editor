@@ -26,8 +26,12 @@ let crop = document.querySelector(".crop");
 let text = document.querySelector(".text");
 let save_canvas = document.querySelector(".save");
 let save_canvas_todb = document.querySelector(".save_todb");
+let saved_proj = document.querySelector(".saved_proj");
 
 class Canvas_Image{
+    /**
+   * @param {image} image Html5 image object
+   */
     constructor(image){
         this.width = image.width;
         this.height = image.height;
@@ -44,51 +48,63 @@ class Canvas_Image{
         this.restore_arr = restore_arr;
         this.removed_ele = removed_ele;
 
+        //sliders for changing properties of images of canvas
         sliders.forEach(slider => {
-            slider.addEventListener("input", () => {
+            slider.addEventListener(Input, () => {
                 this.addFilter();
             });
         });
 
+        //flip the images
         checkboxes.forEach(checkbox => {
-            checkbox.addEventListener("click", ()=>{
+            checkbox.addEventListener(Click, ()=>{
                 this.flipImage();
             });
        });
 
-       undo.addEventListener("click", ()=>{
+    //undo the changes applied
+       undo.addEventListener(Click, ()=>{
             this.undo();
        });
 
-       redo.addEventListener("click", ()=>{
+
+    //redo the undone changes
+       redo.addEventListener(Click, ()=>{
         this.redo();
        });
 
-       resize.addEventListener("click", ()=>{
+    //resize the canvas 
+       resize.addEventListener(Click, ()=>{
         this.resize();
        });
 
-       cdelete.addEventListener("click", ()=>{
+    //delete the canvas elements
+       cdelete.addEventListener(Click, ()=>{
         this.delete_canvas();
        });
 
-       crop.addEventListener("click", ()=>{
+    //crop the required part of the canvas
+       crop.addEventListener(Click, ()=>{
         this.crop();
        });
 
-       text.addEventListener("click", ()=>{
+    //add the text to the canvas
+       text.addEventListener(Click, ()=>{
         this.text();
        });
 
-       save_canvas.addEventListener("click", ()=>{
+    //save canvas to own setup
+       save_canvas.addEventListener(Click, ()=>{
         this.save();
        });
 
-       save_canvas_todb.addEventListener("click", ()=>{
+    //save canvas to database
+       save_canvas_todb.addEventListener(Click, ()=>{
         this.save_todb();
        });
     }
 
+    //start with default setting of image
     resetFilter(){
         brighten.value = default_brightness;
         blur_v.value = default_blur;
@@ -100,6 +116,7 @@ class Canvas_Image{
         this.flipImage();
     }
 
+    //load the new image into canvas
     new_image_load(){
         this.canvas.width = this.image.width;
         this.canvas.height = this.image.height;
@@ -108,6 +125,7 @@ class Canvas_Image{
         this.index+=1;
     }
 
+    //add the properties to canvas element
     addFilter(){
         this.ctx.filter = `brightness(${brighten.value}%) blur(${blur_v.value}px) contrast(${contrast_v.value}%)
         hue-rotate(${hue_rotate_v.value}deg) saturate(${saturate.value}%)`;
@@ -116,6 +134,7 @@ class Canvas_Image{
         this.index+=1;
     }
 
+    //flip the image
     flipImage(){
         if(hor_flip.checked){
             this.ctx.save();
@@ -143,6 +162,7 @@ class Canvas_Image{
         }
     }
 
+    //undo the changes applied
     undo(){
         if (this.index<=0){
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -155,6 +175,7 @@ class Canvas_Image{
         }
     }
 
+    //redo the undone changes
     redo(){
         if (this.index2<=0){
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -166,11 +187,17 @@ class Canvas_Image{
         }
     }
 
+    //delete the canvas element
     delete_canvas(){
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         document.querySelector(".image-container").style.display = "none";
     }
 
+    /**
+   *
+   * @param {image} redraw user defined width
+   * @param {image} redraw user defined height
+   */
     redraw(image_w, image_h){
         this.canvas.width = image_w;
         this.canvas.height = image_h;
@@ -179,25 +206,25 @@ class Canvas_Image{
         this.index+=1;
     }
 
+
+    //resize the image 
     resize(){
         var i_width = this.image.naturalWidth;
         var i_height = this.image.naturalHeight;
         var aspectratio = i_width / i_height;
         var u_width = prompt("Enter the required image width: ");
         var flag_aspectratio = prompt("Do you want to maintain th aspect ratio (1/0): ");
-        console.log(flag_aspectratio);
         if(flag_aspectratio == 0){
             u_height = prompt("Enter the required image height: ");
         }
         else{
             u_height = Math.floor(u_width/aspectratio);
         }
-        console.log(u_width, u_height, aspectratio);
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.redraw(parseInt(u_width), parseInt(u_height));
     }
 
-
+    //crop the required part of canvas
     crop_image(start_x, start_y, end_x, end_y){
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         let r_startx = (Math.abs(start_x-canvas_x_pos)/max_width_canvas)*this.image.width;
@@ -227,6 +254,7 @@ class Canvas_Image{
         });
     }
 
+    //add the text to the canvas
     text(){
         this.ctx.globalCompositeOperation = "source-over";
         this.ctx.font = `${this.canvas.width * 0.05}px Calibri`;
@@ -243,6 +271,7 @@ class Canvas_Image{
         });
     }
 
+    //save the canavs locally
     save(){
         let linkElement = document.getElementById('link');
         linkElement.setAttribute('download', 'edited_image.jpg');
@@ -257,15 +286,40 @@ class Canvas_Image{
         linkElement.click();
     }
 
+    //save the canvas content to firebase
     save_todb(){
+        var i_width = this.image.naturalWidth;
+        var i_height = this.image.naturalHeight;
+        var aspectratio = i_width / i_height;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.redraw(100, 100/aspectratio);
+        var filename = prompt("Enter the file name you want to save as: ");
         let linkElement = document.getElementById('link');
-        linkElement.setAttribute('download', 'edited_image.jpg');
-        let canvasData = this.canvas.toDataURL("image/png");
+        linkElement.setAttribute('download', `${filename}.jpg`);
+        let canvasData = {name: `${filename}.jpg`,
+                        link: this.canvas.toDataURL("image/png")};
         
+        console.log(this.canvas.toDataURL("image/png"));
+
+        const sendImage =  async () => {
+            const response = await fetch("http://localhost:4001/create", 
+            {method:"POST",
+            mode: 'cors',
+            headers: {
+                "Content-Type": "application/json; charset=UTF-8",
+                },
+            body: JSON.stringify(canvasData)
+            });
+        }
+        
+        sendImage().then(canvasData => {
+                console.log(canvasData);
+            });
       
     }
 }
 
+//on upload of image make the canvas object
 uploadBtn.onchange = () => {
     document.querySelector(".image-container").style.display = "block";
     let reader = new FileReader();
@@ -280,3 +334,24 @@ uploadBtn.onchange = () => {
         }
     }
 }
+
+
+//retrieve the projects from firebase
+saved_proj.addEventListener(Click, ()=>{
+    console.log("retrieve project");
+    let filename = prompt("Enter the file name you want to retrive: ");
+        const getImage = async ()=>{
+            const img_response = await fetch("http://localhost:4001/",{method:"GET"});
+            const data = await img_response.json()
+  
+            console.log(data.length);
+            for (let i=0; i<data.length; i++){
+                if (`${filename}.jpg` == data[i].name){
+                    return(data[i].link);
+                }
+            }
+        }
+        getImage().then(data, ()=>{
+            console.log(data);
+        })
+});

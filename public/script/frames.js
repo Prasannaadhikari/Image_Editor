@@ -6,6 +6,10 @@ function clear_frame(frame_dis){
     }
 }
 
+/**
+ * 
+ * @param {object} f frameselected
+ */
 function draw_frame(f){
     ctx.globalCompositeOperation = "source-over";
     ctx.drawImage(f, 0,0, canvas.width, canvas.height);

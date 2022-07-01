@@ -20,11 +20,18 @@ let max_height_canvas = 350;
 let dragable = false;
 
 let sample_size = 40;
+let grayscale_filter = false;
+let sepia_filter = false;
+let pixelate_filter = false;
+let flag_filter = false;
 
 let default_brightness = "100";
 let default_blur = "0";
 let default_contrast = "100";
 let default_hue = "0";
 let default_saturate = "100";
+
+let Input = "input";
+let Click = "click";
 
 

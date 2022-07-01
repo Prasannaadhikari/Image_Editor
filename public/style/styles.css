@@ -139,12 +139,13 @@ h2{
 }
 
 .menu-container>ul{
-    display: flex;
+    /* display: flex; */
 }
 
 .menu-container>ul>li{
     padding: 10px 20px;
     cursor: pointer;
+    float: left;
 }
 
 .menu-container>ul>li:hover{
@@ -153,4 +154,36 @@ h2{
 
 .mask_option{
     display: none;
+}
+
+#button{
+    border: 1px solid lightgrey;
+    padding: 15px;
+    border-radius: 5px;
+    margin-right: 10px;
+    cursor: pointer;
+    background-color: rgb(114, 246, 121);
+}
+
+#button:hover{
+    background-color: darkgrey;
+    background-color: rgb(40, 243, 50);
+}
+
+.saved_proj{
+    float: right;
+    padding: 12px;
+    position: absolute;
+    right: 10%;
+    margin-top: 10px;
+    font-weight: 700;
+    color: black;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: rgb(251, 203, 151);
+    border: none;
+}
+
+.saved_proj:hover{
+    background-color: rgb(254, 161, 62);
 }
